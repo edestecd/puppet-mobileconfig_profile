@@ -3,7 +3,7 @@
 require 'puppet/parameter/boolean'
 
 Puppet::Type.newtype(:config_profile) do
-  @doc = "Manage (install/remove) OSX configuration profile plists (mobileconfig) created with:
+  @doc = "Manage (install/remove) OS X configuration profile plists (mobileconfig) created with:
     Profile Manager part of OSX server :( -- (Settings_for_xx.mobileconfig)
       https://itunes.apple.com/us/app/os-x-server/id537441259?mt=12
       http://www.apple.com/support/osxserver/profilemanager/
@@ -23,7 +23,7 @@ Puppet::Type.newtype(:config_profile) do
     Note:
       users must be logged into the GUI desktop and have finder/preferences running to load user profiles...
       Hence we check if logged in with who command before installnig them
-        - also console means desktop and not ssh"
+        - also console means desktop and not tty or ssh alone"
 
   ensurable do
     desc "What state the profile should be in. (installed/removed) This defaults to `installed`."
