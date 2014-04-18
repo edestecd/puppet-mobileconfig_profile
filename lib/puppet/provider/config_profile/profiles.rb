@@ -53,24 +53,24 @@ Puppet::Type.type(:config_profile).provide(:profiles) do
     options = []
     options << path_option unless a_flag.eql?('-L')
     options << user_option
-    options << self.std_options
+    options << self.class.std_options
 
     out = ""
-    out << "#{self.rm_cmd} -rf #{state_file} && " if a_flag.eql?('-R')
-    out << [self.root_cmd, a_flag, *options].join(' ')
-    out << " && #{self.touch_cmd} #{state_file}" if a_flag.eql?('-I')
+    out << "#{self.class.rm_cmd} -f #{state_file} && " if a_flag.eql?('-R')
+    out << [self.class.root_cmd, a_flag, *options].join(' ')
+    out << " && #{self.class.touch_cmd} #{state_file}" if a_flag.eql?('-I')
     out << " #{embeded_grep.join(' ')}" if a_flag.eql?('-L')
 
     out
   end
 
   def embeded_grep
-    ['|', self.grep_cmd, '-q', @resource[:identifier]]
+    ['|', self.class.grep_cmd, '-q', @resource[:identifier]]
   end
 
   def install
     if @resource.system?
-      profiles('-I', *(path_option + self.std_options))
+      profiles('-I', *(path_option + self.class.std_options))
     else
       su('-', @resource[:user], '-c', "'#{embeded_profiles('-I')}'")
     end
@@ -78,14 +78,14 @@ Puppet::Type.type(:config_profile).provide(:profiles) do
 
   def remove
     if @resource.system?
-      profiles('-R', *(path_option + self.std_options))
+      profiles('-R', *(path_option + self.class.std_options))
     else
       su('-', @resource[:user], '-c', "'#{embeded_profiles('-R')}'")
     end
   end
 
   def exists?
-    if !@resource.system? and !console_login?
+    unless @resource.system? or console_login?
       # return that wich produces no change - ignore for now
       # we can't do nothin if we don't have a console
       return ([:present, :installed].include?(@resource[:ensure]) ? true : false)
@@ -102,13 +102,25 @@ Puppet::Type.type(:config_profile).provide(:profiles) do
     end
   end
 
+  # Refresh the profile (usually after the file changes)
+  def refresh
+    if @resource.system?
+      # Just install it again - it will overwrite the old one
+      install
+    else
+      # Remove the state file letting us know it needs to be updated
+      # the next time this user is logged in (console_login?)
+      rm('-f', state_file)
+    end
+  end
+
   # Check for console login
   # This means full GUI desktop and not a tty or ssh login alone
   # users must be logged into the GUI desktop and have finder/preferences running to load user profiles...
   # Hence we check if logged in with who command before installing them
   def console_login?
     begin
-      who('|', self.grep_cmd, '-qE', "'#{@resource[:user]}\s*console'")
+      who('|', self.class.grep_cmd, '-qE', "'#{@resource[:user]}\s*console'")
     rescue Puppet::ExecutionFailure => e
       Puppet.debug("Console was not found, grep returned: #{e.inspect}")
       return false
@@ -118,7 +130,7 @@ Puppet::Type.type(:config_profile).provide(:profiles) do
 
   def system_profile_loaded?
     begin
-      profiles('-C', *(self.std_options + embeded_grep))
+      profiles('-C', *(self.class.std_options + embeded_grep))
     rescue Puppet::ExecutionFailure => e
       Puppet.debug("System Profile was not found, grep returned: #{e.inspect}")
       return false
