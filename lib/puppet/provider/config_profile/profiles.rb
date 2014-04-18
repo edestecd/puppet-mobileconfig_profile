@@ -2,7 +2,8 @@
 
 Puppet::Type.type(:config_profile).provide(:profiles) do
   desc "Configuration Profile (mobileconfig) management via `profiles` command on OS X.
-    /usr/bin/profiles must be present."
+    /usr/bin/profiles must be present.
+    https://developer.apple.com/library/mac/documentation/Darwin/Reference/Manpages/man1/profiles.1.html"
 
   commands :profiles => '/usr/bin/profiles'
   commands :su       => '/usr/bin/su'
@@ -90,24 +91,21 @@ Puppet::Type.type(:config_profile).provide(:profiles) do
       return ([:present, :installed].include?(@resource[:ensure]) ? true : false)
     end
 
-    begin
-      if @resource.system?
-        profiles('-C', *(self.std_options + embeded_grep))
+    if @resource.system?
+      system_profile_loaded?
+    else
+      if [:present, :installed].include?(@resource[:ensure])
+        user_profile_loaded? and state_file_exists?
       else
-        su('-', @resource[:user], '-c', "'#{embeded_profiles('-L')}'")
-        test('-f', state_file)
+        user_profile_loaded? or state_file_exists?
       end
-    rescue Puppet::ExecutionFailure => e
-      Puppet.debug("Profile was not found, test/grep returned: #{e.inspect}")
-      return false
     end
-    true
   end
 
   # Check for console login
   # This means full GUI desktop and not a tty or ssh login alone
   # users must be logged into the GUI desktop and have finder/preferences running to load user profiles...
-  # Hence we check if logged in with who command before installnig them
+  # Hence we check if logged in with who command before installing them
   def console_login?
     begin
       who('|', self.grep_cmd, '-qE', "'#{@resource[:user]}\s*console'")
@@ -116,6 +114,30 @@ Puppet::Type.type(:config_profile).provide(:profiles) do
       return false
     end
     true
+  end
+
+  def system_profile_loaded?
+    begin
+      profiles('-C', *(self.std_options + embeded_grep))
+    rescue Puppet::ExecutionFailure => e
+      Puppet.debug("System Profile was not found, grep returned: #{e.inspect}")
+      return false
+    end
+    true
+  end
+
+  def user_profile_loaded?
+    begin
+      su('-', @resource[:user], '-c', "'#{embeded_profiles('-L')}'")
+    rescue Puppet::ExecutionFailure => e
+      Puppet.debug("User Profile was not found, grep returned: #{e.inspect}")
+      return false
+    end
+    true
+  end
+
+  def state_file_exists?
+    File.file?(state_file)
   end
 
 end

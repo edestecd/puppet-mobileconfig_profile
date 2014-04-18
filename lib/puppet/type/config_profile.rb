@@ -22,7 +22,7 @@ Puppet::Type.newtype(:config_profile) do
 
     Note:
       users must be logged into the GUI desktop and have finder/preferences running to load user profiles...
-      Hence we check if logged in with who command before installnig them
+      Hence we check if logged in with who command before installing them
         - also console means desktop and not tty or ssh alone"
 
   ensurable do
