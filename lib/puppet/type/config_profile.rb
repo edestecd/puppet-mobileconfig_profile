@@ -1,6 +1,6 @@
 # lib/puppet/type/config_profile.rb
 
-require 'puppet/parameter/boolean'
+#require 'puppet/parameter/boolean'
 
 Puppet::Type.newtype(:config_profile) do
   @doc = "Manage (install/remove) OS X configuration profile plists (mobileconfig) created with:
@@ -61,8 +61,9 @@ Puppet::Type.newtype(:config_profile) do
     end
   end
 
-  newparam(:system, :boolean => true, :parent => Puppet::Parameter::Boolean) do
+  newparam(:system, :boolean => true) do #, :parent => Puppet::Parameter::Boolean
     desc "Is this a device (system wide) profile?"
+    newvalues(:true, :false)
     defaultto false
     validate do |value|
       if value and self[:user]
