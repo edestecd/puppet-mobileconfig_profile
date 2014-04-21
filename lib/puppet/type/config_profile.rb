@@ -11,18 +11,18 @@ Puppet::Type.newtype(:config_profile) do
       https://github.com/timsutton/mcxToProfile
 
     This resource type uses the profiles command (man profiles) and
-    Can manage both user or device (system) profiles
+    Can manage both user or device (system) profiles.
 
     Installs/Updates profile when:
       no profile with identifier is installed
-      profile (plist (mobileconfig)) file content changes
+      profile (plist (mobileconfig)) file content changes - requires subscribe/notify
 
-    You must manage getting the profile file on the system and give it's path
-    **Autorequires:** file in path and user and user home, if possible
+    You must manage getting the profile file on the system and give it's path.
+    **Autorequires:** file in path and user and user home, if possible.
 
     Note:
       users must be logged into the GUI desktop and have finder/preferences running to load user profiles...
-      Hence we check if logged in with who command before installing them
+      Hence we check if logged in with who command before installing them.
         - also console means desktop and not tty or ssh alone"
 
   ensurable do
@@ -44,11 +44,16 @@ Puppet::Type.newtype(:config_profile) do
   end
 
   newparam(:identifier, :namevar => true) do
-    desc "The main PayloadIdentifier in the mobileconfig profile (usually at end of plist)"
+    desc "The main PayloadIdentifier in the mobileconfig profile (usually at end of plist)."
+    validate do |value|
+      unless value and !value.to_s.strip.empty?
+        raise ArgumentError, "Profile identifier must be set"
+      end
+    end
   end
 
   newparam(:path) do
-    desc "The path to the profile file on your system"
+    desc "The path to the profile file on your system."
     validate do |value|
       unless value and Puppet::Util.absolute_path?(value)
         raise ArgumentError, "Profile path must be fully qualified, not '#{value}'"

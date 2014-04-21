@@ -11,7 +11,6 @@ Puppet::Type.type(:config_profile).provide(:profiles) do
   commands :rm       => '/bin/rm'
   commands :grep     => '/usr/bin/grep'
   commands :who      => '/usr/bin/who'
-  commands :test     => '/bin/test'
 
   # Provider confines and defaults
   confine    :operatingsystem => :darwin
