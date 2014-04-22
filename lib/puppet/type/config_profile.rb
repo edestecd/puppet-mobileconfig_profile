@@ -46,7 +46,7 @@ Puppet::Type.newtype(:config_profile) do
   newparam(:identifier, :namevar => true) do
     desc "The main PayloadIdentifier in the mobileconfig profile (usually at end of plist)."
     validate do |value|
-      unless value and !value.to_s.strip.empty?
+      if value.to_s.strip.empty?
         raise ArgumentError, "Profile identifier must be set"
       end
     end
@@ -54,8 +54,9 @@ Puppet::Type.newtype(:config_profile) do
 
   newparam(:path) do
     desc "The path to the profile file on your system."
+    defaultto ''
     validate do |value|
-      unless value and Puppet::Util.absolute_path?(value)
+      unless Puppet::Util.absolute_path?(value)
         raise ArgumentError, "Profile path must be fully qualified, not '#{value}'"
       end
     end
@@ -64,12 +65,12 @@ Puppet::Type.newtype(:config_profile) do
   newparam(:system, :boolean => true) do #, :parent => Puppet::Parameter::Boolean
     desc "Is this a device (system wide) profile?"
     newvalues(:true, :false)
-    defaultto false
+    defaultto :false
     validate do |value|
-      if value and self[:user]
-        raise ArgumentError, "Scope error: must not set both user and system"
+      if value.to_s.eql?('false') and !@resource[:user]
+        raise ArgumentError, "Scope: must set user or system"
       else
-        super
+        super(value)
       end
     end
   end
@@ -77,10 +78,8 @@ Puppet::Type.newtype(:config_profile) do
   newparam(:user) do
     desc "The user to manage this profile for. system must be false if you set this."
     validate do |value|
-      if !value and !self[:system]
-        raise ArgumentError, "No scope defined: must set user or system"
-      else
-        super
+      if @resource.system?
+        raise ArgumentError, "Scope: must not set both user and system"
       end
     end
   end
@@ -88,10 +87,10 @@ Puppet::Type.newtype(:config_profile) do
   newparam(:home) do
     desc "The users home dir, if it can't be guessed."
     defaultto do
-      self[:user] ? File.join('', 'Users', self[:user]) : nil
+      @resource[:user] ? File.join('', 'Users', @resource[:user]) : nil
     end
     validate do |value|
-      unless !value or Puppet::Util.absolute_path?(value)
+      unless Puppet::Util.absolute_path?(value)
         raise ArgumentError, "Home path must be fully qualified, not '#{value}'"
       end
     end

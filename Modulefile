@@ -1,5 +1,5 @@
 name    'edestecd-mobileconfig_profile'
-version '0.0.6'
+version '0.0.7'
 source 'https://github.com/edestecd/puppet-mobileconfig_profile.git'
 author 'Chris Edester'
 license 'GPLv3+'

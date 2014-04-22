@@ -87,13 +87,13 @@ Puppet::Type.type(:config_profile).provide(:profiles) do
     unless @resource.system? or console_login?
       # return that wich produces no change - ignore for now
       # we can't do nothin if we don't have a console
-      return ([:present, :installed].include?(@resource[:ensure]) ? true : false)
+      return (@resource[:ensure].eql?(:present) ? true : false)
     end
 
     if @resource.system?
       system_profile_loaded?
     else
-      if [:present, :installed].include?(@resource[:ensure])
+      if @resource[:ensure].eql?(:present)
         user_profile_loaded? and state_file_exists?
       else
         user_profile_loaded? or state_file_exists?
