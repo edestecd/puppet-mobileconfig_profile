@@ -1,0 +1,85 @@
+{
+  "name": "edestecd-mobileconfig_profile",
+  "version": "0.1.0",
+  "source": "https://github.com/edestecd/puppet-mobileconfig_profile.git",
+  "author": "Chris Edester",
+  "license": "GPLv3+",
+  "summary": "Puppet Module for managing OSX Configuration profiles",
+  "description": "Puppet Module for managing OSX Configuration profiles (both device and user profiles)",
+  "project_page": "https://github.com/edestecd/puppet-mobileconfig_profile",
+  "operatingsystem_support": [
+    {
+      "operatingsystem": "Darwin",
+      "operatingsystemrelease": [
+        "12.0.0",
+        "12.3.0",
+        "12.4.0",
+        "12.5.0"
+      ]
+    }
+  ],
+  "requirements": [
+    {
+      "name": "pe",
+      "version_requirement": "3.2.x"
+    },
+    {
+      "name": "puppet",
+      "version_requirement": "3.2.x"
+    }
+  ],
+  "dependencies": [
+
+  ],
+  "types": [
+    {
+      "name": "config_profile",
+      "doc": "Manage (install/remove) OS X configuration profile plists (mobileconfig) created with:\nProfile Manager part of OSX server :( -- (Settings_for_xx.mobileconfig)\n  https://itunes.apple.com/us/app/os-x-server/id537441259?mt=12\n  http://www.apple.com/support/osxserver/profilemanager/\nmcxToProfile by timsutton :) -- (Settings_for_xx_supplemental.mobileconfig)\n  https://github.com/timsutton/mcxToProfile\n\nThis resource type uses the profiles command (man profiles) and\nCan manage both user or device (system) profiles.\n\nInstalls/Updates profile when:\n  no profile with identifier is installed\n  profile (plist (mobileconfig)) file content changes - requires subscribe/notify\n\nYou must manage getting the profile file on the system and give it's path.\n**Autorequires:** file in path and user and user home, if possible.\n\nNote:\n  users must be logged into the GUI desktop and have finder/preferences running to load user profiles...\n  Hence we check if logged in with who command before installing them.\n    - also console means desktop and not tty or ssh alone",
+      "properties": [
+        {
+          "name": "ensure",
+          "doc": "What state the profile should be in. (installed/removed) This defaults to `installed`.\n\nValid values are `present` (also called `installed`), `absent` (also called `removed`). "
+        }
+      ],
+      "parameters": [
+        {
+          "name": "identifier",
+          "doc": "The main PayloadIdentifier in the mobileconfig profile (usually at end of plist).\n\n"
+        },
+        {
+          "name": "path",
+          "doc": "The path to the profile file on your system.\n\n"
+        },
+        {
+          "name": "system",
+          "doc": "Is this a device (system wide) profile?\n\nValid values are `true`, `false`. "
+        },
+        {
+          "name": "user",
+          "doc": "The user to manage this profile for. system must be false if you set this.\n\n"
+        },
+        {
+          "name": "home",
+          "doc": "The users home dir, if it can't be guessed.\n\n"
+        }
+      ],
+      "providers": [
+        {
+          "name": "profiles",
+          "doc": "Configuration Profile (mobileconfig) management via `profiles` command on OS X.\n/usr/bin/profiles must be present.\nhttps://developer.apple.com/library/mac/documentation/Darwin/Reference/Manpages/man1/profiles.1.html\n\n* Required binaries: `/bin/rm`, `/usr/bin/grep`, `/usr/bin/profiles`, `/usr/bin/su`, `/usr/bin/touch`, `/usr/bin/who`.\n* Default for `operatingsystem` == `darwin`."
+        }
+      ]
+    }
+  ],
+  "checksums": {
+    "Gemfile": "586d0299e4e117d70b71e703d7bdb770",
+    "Gemfile.lock": "a944c055cd14e4c2a0412f086612aad2",
+    "LICENSE": "4ddd17b0c9241d7b24a4960caefe8e40",
+    "Modulefile": "321c588b4acec342b45063f9d81f665f",
+    "README.md": "ce33a463b2d0c2fb7d69ee70553d1f3c",
+    "lib/puppet/provider/config_profile/profiles.rb": "c87786845cafc3e440fb719f561a4fd1",
+    "lib/puppet/type/config_profile.rb": "88d2a067ac85713a0221776b7d75d5a3",
+    "manifests/init.pp": "3b09b14426e45f96abe898d0d32fbda9",
+    "manifests/params.pp": "5e2357ec21ec452249a0dae2cfbb2082"
+  }
+}

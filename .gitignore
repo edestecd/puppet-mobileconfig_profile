@@ -12,6 +12,7 @@ Thumbs.db
 # Bundler #
 ###########
 /.bundle
+/pkg
 
 # Librarian #
 #############
