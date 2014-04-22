@@ -16,22 +16,6 @@ Puppet::Type.type(:config_profile).provide(:profiles) do
   confine    :operatingsystem => :darwin
   defaultfor :operatingsystem => :darwin
 
-  def self.root_cmd
-    '/usr/bin/profiles'
-  end
-
-  def self.touch_cmd
-    '/usr/bin/touch'
-  end
-
-  def self.rm_cmd
-    '/bin/rm'
-  end
-
-  def self.grep_cmd
-    '/usr/bin/grep'
-  end
-
   def self.std_options
     ['-f']
   end
@@ -54,24 +38,29 @@ Puppet::Type.type(:config_profile).provide(:profiles) do
     options << user_option
     options << self.class.std_options
 
-    out = ""
-    out << "#{self.class.rm_cmd} -f #{state_file} && " if a_flag.eql?('-R')
-    out << [self.class.root_cmd, a_flag, *options].join(' ')
-    out << " && #{self.class.touch_cmd} #{state_file}" if a_flag.eql?('-I')
-    out << " #{embeded_grep.join(' ')}" if a_flag.eql?('-L')
+    cmd = ""
+    cmd << [command(:profiles), a_flag, *options].join(' ')
+    cmd << " && #{command(:touch)} #{state_file}" if a_flag.eql?('-I')
+    cmd << " && #{command(:rm)} -f #{state_file}" if a_flag.eql?('-R')
+    cmd << " #{embeded_grep.join(' ')}" if a_flag.eql?('-L')
 
-    out
+    cmd
   end
 
-  def embeded_grep
-    ['|', self.class.grep_cmd, '-q', @resource[:identifier]]
+  def embeded_grep(quiet=true)
+    cmd = ['|', command(:grep)]
+    cmd << '-q' if quiet
+    cmd << @resource[:identifier]
+    cmd
   end
 
   def install
     if @resource.system?
       profiles('-I', *(path_option + self.class.std_options))
     else
-      su('-', @resource[:user], '-c', "'#{embeded_profiles('-I')}'")
+      cmd = [command(:su), '-', @resource[:user], '-c', "'#{embeded_profiles('-I')}'"].join(' ')
+      execute(cmd, {:failonfail => true, :override_locale => true, :squelch => false, :combine => true})
+      #su('-', @resource[:user], '-c', "'#{embeded_profiles('-I')}'")
     end
   end
 
@@ -79,7 +68,9 @@ Puppet::Type.type(:config_profile).provide(:profiles) do
     if @resource.system?
       profiles('-R', *(path_option + self.class.std_options))
     else
-      su('-', @resource[:user], '-c', "'#{embeded_profiles('-R')}'")
+      cmd = [command(:su), '-', @resource[:user], '-c', "'#{embeded_profiles('-R')}'"].join(' ')
+      execute(cmd, {:failonfail => true, :override_locale => true, :squelch => false, :combine => true})
+      #su('-', @resource[:user], '-c', "'#{embeded_profiles('-R')}'")
     end
   end
 
@@ -96,7 +87,7 @@ Puppet::Type.type(:config_profile).provide(:profiles) do
       if @resource[:ensure].eql?(:present)
         user_profile_loaded? and state_file_exists?
       else
-        user_profile_loaded? or state_file_exists?
+        user_profile_loaded?# or state_file_exists?
       end
     end
   end
@@ -109,7 +100,7 @@ Puppet::Type.type(:config_profile).provide(:profiles) do
     else
       # Remove the state file letting us know it needs to be updated
       # the next time this user is logged in (console_login?)
-      rm('-f', state_file)
+      File.delete(state_file)
     end
   end
 
@@ -119,32 +110,41 @@ Puppet::Type.type(:config_profile).provide(:profiles) do
   # Hence we check if logged in with who command before installing them
   def console_login?
     begin
-      who('|', self.class.grep_cmd, '-qE', "'#{@resource[:user]}\s*console'")
+      cmd = [command(:who), '|', command(:grep), '-qE', "'#{@resource[:user]}\\s*console'"].join(' ')
+      out = execute(cmd, {:failonfail => true, :override_locale => true, :squelch => false, :combine => true})
+      #who('|', command(:grep), '-qE', "'#{@resource[:user]}\s*console'")
+      Puppet.debug("Console was found, grep returned: #{out.inspect}")
+      return true
     rescue Puppet::ExecutionFailure => e
-      Puppet.debug("Console was not found, grep returned: #{e.inspect}")
+      Puppet.debug("Console was NOT found, grep returned: #{e.inspect}")
       return false
     end
-    true
   end
 
   def system_profile_loaded?
     begin
-      profiles('-C', *(self.class.std_options + embeded_grep))
+      cmd = [command(:profiles), '-C', *(self.class.std_options + embeded_grep)].join(' ')
+      out = execute(cmd, {:failonfail => true, :override_locale => true, :squelch => false, :combine => true})
+      #profiles('-C', *(self.class.std_options + embeded_grep))
+      Puppet.debug("System Profile was found, grep returned: #{out.inspect}")
+      return true
     rescue Puppet::ExecutionFailure => e
-      Puppet.debug("System Profile was not found, grep returned: #{e.inspect}")
+      Puppet.debug("System Profile was NOT found, grep returned: #{e.inspect}")
       return false
     end
-    true
   end
 
   def user_profile_loaded?
     begin
-      su('-', @resource[:user], '-c', "'#{embeded_profiles('-L')}'")
+      cmd = [command(:su), '-', @resource[:user], '-c', "'#{embeded_profiles('-L')}'"].join(' ')
+      out = execute(cmd, {:failonfail => true, :override_locale => true, :squelch => false, :combine => true})
+      #su('-', @resource[:user], '-c', "'#{embeded_profiles('-L')}'")
+      Puppet.debug("User Profile was found, grep returned: #{out.inspect}")
+      return true
     rescue Puppet::ExecutionFailure => e
-      Puppet.debug("User Profile was not found, grep returned: #{e.inspect}")
+      Puppet.debug("User Profile was NOT found, grep returned: #{e.inspect}")
       return false
     end
-    true
   end
 
   def state_file_exists?
