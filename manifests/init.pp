@@ -19,7 +19,7 @@ define mobileconfig_profile (
 
   validate_absolute_path($profiles_path)
   validate_absolute_path($path)
-  validate_bool($system)
+  #validate_bool($system)
 
   if !defined(File[$profiles_path]) {
     file { $profiles_path:

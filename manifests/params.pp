@@ -6,11 +6,11 @@ class mobileconfig_profile::params {
 
   # init.pp
   # At least OSX 10.8 "Mountain Lion"
-  if ($::osfamily == 'Darwin') and ($::macosx_productversion >= 10.8.0) {
+  if ($::osfamily == 'Darwin') and ($::macosx_productversion >= '10.8.0') {
     $ensure        = installed
     $profiles_path = "/var/lib/puppet/mobileconfigs"
     $path          = "${profiles_path}/${identifier}"
-    $system        = false
+    $system        = undef
 
     $root_user     = 'root'
     $root_group    = 'wheel'
