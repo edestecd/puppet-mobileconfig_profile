@@ -1,6 +1,6 @@
 {
   "name": "edestecd-mobileconfig_profile",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "source": "https://github.com/edestecd/puppet-mobileconfig_profile.git",
   "author": "Chris Edester",
   "license": "GPLv3+",
@@ -43,8 +43,12 @@
       ],
       "parameters": [
         {
+          "name": "name",
+          "doc": "The unique identifier for this mobileconfig profile (usually user_identifier, for user profiles).\n\n"
+        },
+        {
           "name": "identifier",
-          "doc": "The main PayloadIdentifier in the mobileconfig profile (usually at end of plist).\n\n"
+          "doc": "The main PayloadIdentifier in the mobileconfig profile (usually at end of plist). Can be the same for multiple users...\n\n"
         },
         {
           "name": "path",
@@ -72,14 +76,15 @@
     }
   ],
   "checksums": {
+    "CHANGELOG": "722e5f4c86cfffbee7fb857840aaa7d4",
     "Gemfile": "586d0299e4e117d70b71e703d7bdb770",
     "Gemfile.lock": "a944c055cd14e4c2a0412f086612aad2",
     "LICENSE": "4ddd17b0c9241d7b24a4960caefe8e40",
-    "Modulefile": "321c588b4acec342b45063f9d81f665f",
+    "Modulefile": "8f43c79d749ea19986a3e6ff85ec3c50",
     "README.md": "ce33a463b2d0c2fb7d69ee70553d1f3c",
     "lib/puppet/provider/config_profile/profiles.rb": "c87786845cafc3e440fb719f561a4fd1",
-    "lib/puppet/type/config_profile.rb": "88d2a067ac85713a0221776b7d75d5a3",
-    "manifests/init.pp": "3b09b14426e45f96abe898d0d32fbda9",
+    "lib/puppet/type/config_profile.rb": "921fdb11d551d316bea5ac54f5bfd958",
+    "manifests/init.pp": "6044a2262869b8d8795299d4f933dcd1",
     "manifests/params.pp": "5e2357ec21ec452249a0dae2cfbb2082"
   }
 }
