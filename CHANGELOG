@@ -1,0 +1,5 @@
+2014-04-28 (0.1.1)  Chris Edester
+        * fixes #1 - Error when same mobileconfig_profile for two users
+
+2014-04-22 (0.1.0)  Chris Edester
+        * first stable release

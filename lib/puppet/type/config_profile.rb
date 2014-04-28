@@ -43,8 +43,21 @@ Puppet::Type.newtype(:config_profile) do
     defaultto :installed
   end
 
-  newparam(:identifier, :namevar => true) do
-    desc "The main PayloadIdentifier in the mobileconfig profile (usually at end of plist)."
+  # ***Dummy namevar***
+  # I'd really like :identifier to be the namevar, but it needs to be unique only per user for user profiles.
+  # Thus we add name, which will usually be jsut the title and not set that often...
+  newparam(:name, :namevar => true) do
+    desc "The unique identifier for this mobileconfig profile (usually user_identifier, for user profiles)."
+    validate do |value|
+      if value.to_s.strip.empty?
+        raise ArgumentError, "Profile name must be set"
+      end
+    end
+  end
+
+  newparam(:identifier, :namevar => false) do
+    desc "The main PayloadIdentifier in the mobileconfig profile (usually at end of plist). Can be the same for multiple users..."
+    defaultto { @resource[:name] }
     validate do |value|
       if value.to_s.strip.empty?
         raise ArgumentError, "Profile identifier must be set"

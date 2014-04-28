@@ -4,7 +4,7 @@
 #
 
 define mobileconfig_profile (
-  $identifier    = $title,
+  $identifier    = $name,
   $ensure        = $mobileconfig_profile::params::ensure,
   $profiles_path = $mobileconfig_profile::params::profiles_path,
   $path          = $mobileconfig_profile::params::path,
@@ -41,7 +41,7 @@ define mobileconfig_profile (
     }
   }
 
-  config_profile { $title:
+  config_profile { $name:
     identifier => $identifier,
     ensure     => $ensure,
     path       => $path,
