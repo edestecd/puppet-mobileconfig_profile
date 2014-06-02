@@ -1,6 +1,6 @@
 {
   "name": "edestecd-mobileconfig_profile",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "source": "https://github.com/edestecd/puppet-mobileconfig_profile.git",
   "author": "Chris Edester",
   "license": "GPLv3+",
@@ -29,7 +29,10 @@
     }
   ],
   "dependencies": [
-
+    {
+      "name": "puppetlabs/stdlib",
+      "version_requirement": ">= 4.1.0"
+    }
   ],
   "types": [
     {
@@ -76,11 +79,11 @@
     }
   ],
   "checksums": {
-    "CHANGELOG": "722e5f4c86cfffbee7fb857840aaa7d4",
-    "Gemfile": "586d0299e4e117d70b71e703d7bdb770",
-    "Gemfile.lock": "a944c055cd14e4c2a0412f086612aad2",
+    "CHANGELOG": "ef8ce25b97db0987f2a0ca4c2a83d397",
+    "Gemfile": "755a2f1d79608a718eb65adc59dd2e13",
+    "Gemfile.lock": "8c4821ef25b1500204c3214dafe0678c",
     "LICENSE": "4ddd17b0c9241d7b24a4960caefe8e40",
-    "Modulefile": "8f43c79d749ea19986a3e6ff85ec3c50",
+    "Modulefile": "0da7915c43bf7a4ed6514810035f2e03",
     "README.md": "ce33a463b2d0c2fb7d69ee70553d1f3c",
     "lib/puppet/provider/config_profile/profiles.rb": "c87786845cafc3e440fb719f561a4fd1",
     "lib/puppet/type/config_profile.rb": "921fdb11d551d316bea5ac54f5bfd958",

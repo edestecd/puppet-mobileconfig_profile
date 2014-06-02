@@ -1,5 +1,5 @@
 name    'edestecd-mobileconfig_profile'
-version '0.1.1'
+version '0.1.2'
 source 'https://github.com/edestecd/puppet-mobileconfig_profile.git'
 author 'Chris Edester'
 license 'GPLv3+'
@@ -8,4 +8,4 @@ description 'Puppet Module for managing OSX Configuration profiles (both device 
 project_page 'https://github.com/edestecd/puppet-mobileconfig_profile'
 
 ## Add dependencies, if any:
-#dependency 'puppetlabs/stdlib', '>= 4.1.0'
+dependency 'puppetlabs/stdlib', '>= 4.1.0'
