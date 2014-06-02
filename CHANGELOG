@@ -1,4 +1,4 @@
-2014-04-28 (0.1.2)  Chris Edester
+2014-06-02 (0.1.2)  Chris Edester
         * we are using validations from stdlib, so require it in Modulefile
 
 2014-04-28 (0.1.1)  Chris Edester
