@@ -24,7 +24,7 @@ define mobileconfig_profile (
   if !defined(File[$profiles_path]) {
     file { $profiles_path:
       ensure => directory,
-      mode   => 0755,
+      mode   => '0755',
       owner  => $mobileconfig_profile::params::root_user,
       group  => $mobileconfig_profile::params::root_group,
     }
@@ -33,7 +33,7 @@ define mobileconfig_profile (
   if !defined(File[$path]) {
     file { $path:
       ensure  => file,
-      mode    => 0644,
+      mode    => '0644',
       owner   => $mobileconfig_profile::params::root_user,
       group   => $mobileconfig_profile::params::root_group,
       content => $content,
