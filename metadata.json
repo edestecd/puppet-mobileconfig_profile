@@ -1,6 +1,6 @@
 {
   "name": "edestecd-mobileconfig_profile",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "source": "https://github.com/edestecd/puppet-mobileconfig_profile.git",
   "author": "Chris Edester",
   "license": "GPLv3+",
@@ -21,11 +21,11 @@
   "requirements": [
     {
       "name": "pe",
-      "version_requirement": "3.2.x"
+      "version_requirement": "3.x"
     },
     {
       "name": "puppet",
-      "version_requirement": "3.2.x"
+      "version_requirement": "3.x"
     }
   ],
   "dependencies": [

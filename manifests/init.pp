@@ -42,8 +42,8 @@ define mobileconfig_profile (
   }
 
   config_profile { $name:
-    identifier => $identifier,
     ensure     => $ensure,
+    identifier => $identifier,
     path       => $path,
     system     => $system,
     user       => $user,
